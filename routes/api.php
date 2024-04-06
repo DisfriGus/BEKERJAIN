@@ -11,4 +11,4 @@ Route::get('/user', function (Request $request) {
 // Authentication
 Route::post('registeruser', [AuthController::class, 'registerUser']);
 Route::post('loginuser', [AuthController::class, 'loginUser']);
-Route::get('users/{id}', [AuthController::class, 'getUser']);
+Route::get('user/{id}', [AuthController::class, 'getUser']);

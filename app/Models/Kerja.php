@@ -18,4 +18,6 @@ class Kerja extends Model
         'nama_posisi',
         'status',
     ];
+
+    protected $keyType = 'string';
 }

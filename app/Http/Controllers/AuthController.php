@@ -48,6 +48,9 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // Pengambian user
             $user = Auth::user();
+
+            // Fix ID
+            $user->id = (string) $user->id;
             
             // Response data user
             return response()->json($user, 200);

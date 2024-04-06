@@ -24,4 +24,6 @@ class Lowongan extends Model
     {
         return $this->belongsTo(Perusahaan::class, 'id_perusahaan');
     }
+
+    protected $keyType = 'string';
 }

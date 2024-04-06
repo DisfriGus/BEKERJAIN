@@ -17,4 +17,6 @@ class Perusahaan extends Model
         'tipe',
         'tahun_berdiri',
     ];
+
+    protected $keyType = 'string';
 }
