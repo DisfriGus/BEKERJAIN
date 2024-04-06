@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('deskripsi')->default("-");
             $table->date('tanggal_lahir');
-            $table->rememberToken()->nullable();;
+            $table->rememberToken()->nullable();
             $table->timestamps();
         });
 

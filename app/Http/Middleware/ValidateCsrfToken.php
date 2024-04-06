@@ -19,6 +19,6 @@ class ValidateCsrfToken
     }
 
     protected $except = [
-        '/registeruser',
+        '/x',
     ];
 }

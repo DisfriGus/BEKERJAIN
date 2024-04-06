@@ -48,9 +48,6 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // Pengambian user
             $user = Auth::user();
-
-            // Fix ID
-            $user->id = (string) $user->id;
             
             // Response data user
             return response()->json($user, 200);
@@ -72,6 +69,23 @@ class AuthController extends Controller
         } else {
             // Response gagal
             return response()->json(['error' => 'User not found'], 404);
+        }
+    }
+
+    public function testUser($id, Request $request)
+    {
+        // Mencari user menggunakan ID
+        $user = User::find($id);
+
+        // Validasi
+        if ($user) {
+            // Response sukses
+            $user->nama = $request->nama;
+            $user->save();
+            return response()->json(['user'=> $user, 'nama' => $request->nama], 200);
+        } else {
+            // Response gagal
+            return response()->json(['error' => 'User not found', 'error' => 'User not found'], 404);
         }
     }
 
