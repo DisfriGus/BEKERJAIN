@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Perusahaan;
 
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -72,23 +73,6 @@ class AuthController extends Controller
         }
     }
 
-    public function testUser($id, Request $request)
-    {
-        // Mencari user menggunakan ID
-        $user = User::find($id);
-
-        // Validasi
-        if ($user) {
-            // Response sukses
-            $user->nama = $request->nama;
-            $user->save();
-            return response()->json(['user'=> $user, 'nama' => $request->nama], 200);
-        } else {
-            // Response gagal
-            return response()->json(['error' => 'User not found', 'error' => 'User not found'], 404);
-        }
-    }
-
     public function deleteUser($id)
     {
         // Mencari user menggunakan ID
@@ -104,6 +88,52 @@ class AuthController extends Controller
         } else {
             // Response gagal
             return response()->json(['error' => 'User not found'], 404);
+        }
+    }
+
+    public function registerPerusahaan(Request $request) 
+    {
+        // Data perusahaan
+        $generateID = Uuid::uuid4()->toString();
+        $data['id'] = $generateID;
+        $data['nama'] = $request->nama;
+        $data['email'] = $request->email;
+        $data['deskripsi'] = "-";
+        $data['password'] = bcrypt($request->password);
+        $data['tipe'] = $request->tipe;
+        $data['tahun_berdiri'] = $request->tahun_berdiri;
+        
+        // Pembuatan Perusahaan baru dan update data table 
+        $perusahaan = Perusahaan::create($data);
+        
+        // Validasi
+        if ($perusahaan) {
+            // Response sukses
+            return response()->json($data, 201);
+        }
+        
+        // Response gagal
+        return response()->json(['error' => 'Registrasi gagal'], 400);
+    }
+
+    public function loginPerusahaan(Request $request)
+    {
+        // Validate the incoming request data
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        // Attempt to authenticate perusahaan
+        if (Auth::guard('perusahaan')->attempt($credentials)) {
+            // If authentication successful, get the authenticated perusahaan
+            $perusahaan = Auth::guard('perusahaan')->user();
+            
+            // Response with perusahaan data
+            return response()->json($perusahaan, 200);
+        } else {
+            // If authentication fails, return error response
+            return response()->json(['error' => 'Invalid credentials'], 401);
         }
     }
 }

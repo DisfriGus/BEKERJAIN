@@ -6,30 +6,31 @@ use App\Models\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+
 
 class UserController extends Controller
 {
     public function editUserDescription(Request $request, $id)
     {
         // Pencarian user
-        $user = User::find($request->id);
+        $user = User::find($id);
 
-        Log::info("Nama before assignment: " . $user->nama);
+        // Pengecekan email dalam database
+        $existingUser = User::where('email', $request->email)->first();
+        if ($existingUser && $existingUser->id !== $user->id) {
+            return ["result" => "Email sudah digunakan"];
+        }
 
-        $data['id'] = $user->id;
-        $data['nama'] = $user->nama;
-        $data['email'] = $user->email;
-        $data['deskripsi'] = $request->des;
-        $data['password'] = ($user->password);
-        $data['tanggal_lahir'] = $user->tanggal_lahir;
+        // Update informasi user
+        $user->nama = $request->nama;
+        $user->email = $request->email;
+        $user->deskripsi = $request->deskripsi;
+        $result = $user->save();
 
-        $user->nama = $data['nama'];
-
-        return response()->json([
-            'nama' => $request->nama,
-            'namadata' => $data['nama'],
-            'user' => $user, // Include 'nama' attribute
-          ], 200);
+        if ($result) {
+            return ["result" => "Data is updated"];
+        } else {
+            return ["result" => "Data isn't updated"];
+        }
     }
 }

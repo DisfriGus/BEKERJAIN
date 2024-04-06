@@ -13,7 +13,9 @@ Route::get('/user', function (Request $request) {
 Route::post('registeruser', [AuthController::class, 'registerUser']);
 Route::post('loginuser', [AuthController::class, 'loginUser']);
 Route::get('user/{id}', [AuthController::class, 'getUser']);
-Route::put('testuser/{id}', [AuthController::class, 'testUser']);
+
+Route::post('registerperusahaan', [AuthController::class, 'registerPerusahaan']);
+Route::post('loginperusahaan', [AuthController::class, 'loginPerusahaan']);
 
 // User Functions
-Route::put('/user/{id}/edit', [UserController::class, 'editUserDescription']);
+Route::put('/user/edit/{id}', [UserController::class, 'editUserDescription']);
