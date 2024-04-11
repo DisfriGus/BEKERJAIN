@@ -15,9 +15,12 @@ return new class extends Migration
             $table->uuid('id')->primary()->unique();
             $table->string('nama_posisi');
             $table->string('deskripsi_pekerjaan');
+            $table->string('kualifikasi');
+            $table->string('lokasi');
             $table->boolean('open');
             $table->integer('slot_posisi');
-            $table->integer('gaji_bulanan');
+            $table->integer('gaji_dari');
+            $table->integer('gaji_hingga');
             $table->uuid('id_perusahaan');
             $table->foreign('id_perusahaan')->references('id')->on('perusahaans')->onDelete('cascade');
             $table->timestamps();

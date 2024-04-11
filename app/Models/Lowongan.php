@@ -12,11 +12,15 @@ class Lowongan extends Model
     protected $table = 'lowongan';
 
     protected $fillable = [
+        'id',
         'nama_posisi',
         'deskripsi_pekerjaan',
+        'kualifikasi',
+        'lokasi',
         'open',
         'slot_posisi',
-        'gaji_bulanan',
+        'gaji_dari',
+        'gaji_hingga',
         'id_perusahaan',
     ];
 
