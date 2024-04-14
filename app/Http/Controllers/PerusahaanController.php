@@ -8,6 +8,8 @@ use App\Models\Perusahaan;
 use App\Models\Lowongan;
 use App\Models\Kerja;
 
+use Carbon\Carbon;
+
 class PerusahaanController extends Controller
 {
     public function getAllPerusahaan()
@@ -75,6 +77,29 @@ class PerusahaanController extends Controller
         return response()->json($lowongan, 200);
     }
 
+    public function deleteLowongan($id)
+    {
+        $lowongan = Lowongan::find($id);
+    
+        // Validasi
+        if (!$lowongan) {
+            return response()->json(['error' => 'Lowongan not found'], 404);
+        }
+    
+        // Update status dan tgl_akhir kerja
+        Kerja::where('id_lowongan', $id)
+            ->update([
+                'status' => 'terhapus',
+                'tgl_akhir' => Carbon::now()
+            ]);
+    
+        // Delete lowongan
+        $lowongan->delete();
+    
+        // Response sukses
+        return response()->json(['message' => 'Lowongan deleted successfully'], 200);
+    }
+
     public function checkPerusahaanLowongan($id)
     {
         // Mengambil semua lowongan dengan id sesuai
@@ -93,5 +118,46 @@ class PerusahaanController extends Controller
 
         // Response berhasil
         return response()->json($pendaftar, 200);
+    }
+
+    public function terimaPendaftarLowongan($idLowongan, $idUser)
+    {
+        // Pencarian kerja
+        $kerja = Kerja::where('id_lowongan', $idLowongan)
+                      ->where('id_user', $idUser)
+                      ->first();
+    
+        // Validasi
+        if (!$kerja) {
+            return response()->json(['error' => 'Lamaran tidak ditemukan'], 404);
+        }
+    
+        // Update status kerja
+        $kerja->status = 'diterima';
+        $kerja->tgl_mulai = Carbon::now();
+        $kerja->save();
+    
+        // Response berhasil
+        return response()->json(['message' => 'Pelamar diterima'], 200);
+    }
+
+    public function tolakPendaftarLowongan($idLowongan, $idUser)
+    {
+        // Pencarian kerja
+        $kerja = Kerja::where('id_lowongan', $idLowongan)
+                      ->where('id_user', $idUser)
+                      ->first();
+    
+        // Validasi
+        if (!$kerja) {
+            return response()->json(['error' => 'Lamaran tidak ditemukan'], 404);
+        }
+    
+        // Update status kerja
+        $kerja->status = 'ditolak';
+        $kerja->save();
+    
+        // Response berhasil
+        return response()->json(['message' => 'Pelamar ditolak'], 200);
     }
 }

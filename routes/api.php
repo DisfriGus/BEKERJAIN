@@ -35,3 +35,5 @@ Route::post('pt/newlowongan/{id}', [PerusahaanController::class, 'createLowongan
 Route::put('pt/lowonganperusahaan/edit/{id}', [UserController::class, 'editLowongan']);
 Route::get('pt/lowonganperusahaan/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);
 Route::get('pt/lowonganperusahaan/pendaftar/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);
+Route::put('pt/lowonganperusahaan/terima/{idLowongan}/{idUser}', [PerusahaanController::class, 'terimaPendaftarLowongan']);
+Route::put('pt/lowonganperusahaan/tolak/{idLowongan}/{idUser}', [PerusahaanController::class, 'tolakPendaftarLowongan']);
