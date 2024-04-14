@@ -51,8 +51,4 @@ class User extends Authenticatable
     }
 
     protected $keyType = 'string';
-
-    public function newDesc($new) {
-        $this->deskripsi = $new;
-    }
 }

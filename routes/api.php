@@ -17,6 +17,7 @@ Route::get('user/{id}', [AuthController::class, 'getUser']);
 
 Route::post('registerperusahaan', [AuthController::class, 'registerPerusahaan']);
 Route::post('loginperusahaan', [AuthController::class, 'loginPerusahaan']);
+Route::get('pt/{id}', [AuthController::class, 'getPerusahaan']);
 
 // User Functions
 Route::put('user/edit/{id}', [UserController::class, 'editUser']);
@@ -28,8 +29,9 @@ Route::post('user/apply/{lowonganId}/{id}', [UserController::class, 'applyLowong
 Route::get('user/lowongan/{id}', [UserController::class, 'getLowonganInfo']);
 
 // Perusahaan Functions
-Route::get('allperusahaan', [PerusahaanController::class, 'getAllPerusahaan']);
+Route::get('pt/allperusahaan', [PerusahaanController::class, 'getAllPerusahaan']);
 
-Route::post('newlowongan/{id}', [PerusahaanController::class, 'createLowongan']);
-Route::get('lowonganperusahaan/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);
-Route::get('lowonganperusahaan/pendaftar/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);
+Route::post('pt/newlowongan/{id}', [PerusahaanController::class, 'createLowongan']);
+Route::put('pt/lowonganperusahaan/edit/{id}', [UserController::class, 'editLowongan']);
+Route::get('pt/lowonganperusahaan/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);
+Route::get('pt/lowonganperusahaan/pendaftar/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);

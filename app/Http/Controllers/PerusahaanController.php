@@ -43,6 +43,38 @@ class PerusahaanController extends Controller
         return response()->json($lowongan, 201);
     }
 
+    public function editLowongan(Request $request, $id)
+    {
+        $lowongan = Lowongan::find($id);
+        if (!$lowongan) {
+            return response()->json(['error' => 'Lowongan tidak ditemukan'], 404);
+        }
+
+        // Validasi
+        $validatedData = $request->validate([
+            'nama_posisi' => 'required|string|max:255',
+            'deskripsi_pekerjaan' => 'required|string',
+            'lokasi' => 'required|string|max:255',
+            'open' => 'required|boolean',
+            'slot_posisi' => 'required|integer',
+            'gaji_bulanan' => 'required|integer',
+        ]);
+
+        // Update data lowongan
+        $lowongan->nama_posisi = $validatedData['nama_posisi'];
+        $lowongan->deskripsi_pekerjaan = $validatedData['deskripsi_pekerjaan'];
+        $lowongan->lokasi = $validatedData['lokasi'];
+        $lowongan->open = $validatedData['open'];
+        $lowongan->slot_posisi = $validatedData['slot_posisi'];
+        $lowongan->gaji_bulanan = $validatedData['gaji_bulanan'];
+        
+        // Update lowongan
+        $lowongan->save();
+
+        // Response berhasil
+        return response()->json($lowongan, 200);
+    }
+
     public function checkPerusahaanLowongan($id)
     {
         // Mengambil semua lowongan dengan id sesuai

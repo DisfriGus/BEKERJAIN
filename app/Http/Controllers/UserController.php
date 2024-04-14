@@ -68,7 +68,7 @@ class UserController extends Controller
         $kerja->id_lowongan = $lowonganId;
         $kerja->id_perusahaan = $lowongan->id_perusahaan;
         $kerja->id_user = $userId;
-        $kerja->tgl_mulai = now(); 
+        $kerja->tgl_mulai = null; 
         $kerja->tgl_akhir = null; 
         $kerja->nama_posisi = $lowongan->nama_posisi;
         $kerja->status = 'applied';
@@ -93,7 +93,7 @@ class UserController extends Controller
     public function getLowonganInfo($id)
     {
         $lowongan = Lowongan::find($id);
-        
+
         // Validasi
         if (!$lowongan) {
             return response()->json(['error' => 'Lowongan tidak ditemukan'], 404);

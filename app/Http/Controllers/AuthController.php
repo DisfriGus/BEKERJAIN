@@ -136,4 +136,13 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
     }
+
+    public function getPerusahaan($id)
+    {
+        $perusahaan = Perusahaan::find($id);
+        if (!$perusahaan) {
+            return response()->json(['error' => 'Perusahaan tidak ditemukan'], 404);
+        }
+        return response()->json($perusahaan, 200);
+    }
 }
