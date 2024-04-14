@@ -19,10 +19,17 @@ Route::post('registerperusahaan', [AuthController::class, 'registerPerusahaan'])
 Route::post('loginperusahaan', [AuthController::class, 'loginPerusahaan']);
 
 // User Functions
-Route::put('user/edit/{id}', [UserController::class, 'editUserDescription']);
+Route::put('user/edit/{id}', [UserController::class, 'editUser']);
+
+Route::get('user/experience/{id}', [UserController::class, 'checkUserExperience']);
+Route::get('user/lowongan', [UserController::class, 'getAllLowongan']);
+Route::get('user/perusahaan', [UserController::class, 'getAllPerusahaan']);
+Route::post('user/apply/{lowonganId}/{id}', [UserController::class, 'applyLowongan']);
+Route::get('user/lowongan/{id}', [UserController::class, 'getLowonganInfo']);
 
 // Perusahaan Functions
-
 Route::get('allperusahaan', [PerusahaanController::class, 'getAllPerusahaan']);
+
 Route::post('newlowongan/{id}', [PerusahaanController::class, 'createLowongan']);
 Route::get('lowonganperusahaan/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);
+Route::get('lowonganperusahaan/pendaftar/{id}', [PerusahaanController::class, 'checkPerusahaanLowongan']);

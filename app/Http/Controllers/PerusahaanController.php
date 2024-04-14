@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Perusahaan;
 use App\Models\Lowongan;
+use App\Models\Kerja;
 
 class PerusahaanController extends Controller
 {
@@ -49,5 +50,16 @@ class PerusahaanController extends Controller
 
         // Return semua lowongan dengan id terkait
         return response()->json($lowongans, 200);
+    }
+
+    public function checkPendaftarLowongan($id)
+    {
+        // Mendapatkan class kerja dengan id sesuai dan status == "applied"
+        $pendaftar = Kerja::where('id_lowongan', $id)
+                            ->where('status', 'applied')
+                            ->get();
+
+        // Response berhasil
+        return response()->json($pendaftar, 200);
     }
 }
