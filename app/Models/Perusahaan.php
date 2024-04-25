@@ -13,6 +13,7 @@ class Perusahaan extends Authenticatable
         'id',
         'nama',
         'email',
+        'profile_picture',
         'password',
         'deskripsi',
         'tipe',

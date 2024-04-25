@@ -30,10 +30,11 @@ class UserController extends Controller
         $user->deskripsi = $request->deskripsi;
         $result = $user->save();
 
+        // 
         if ($result) {
-            return ["result" => "Data is updated"];
+            return ["result" => "Data berhasil di update"];
         } else {
-            return ["result" => "Data isn't updated"];
+            return ["result" => "Data gagal di update"];
         }
     }
 
@@ -41,7 +42,7 @@ class UserController extends Controller
     {
         // Mencari kerjaan selesai dengan id_user yang sesuai
         $items = Kerja::where('id_user', $id)
-            ->where('status', 'finished')
+            ->where('status', 'selesai')
             ->get();
 
         // Return the retrieved items as a JSON response
@@ -69,9 +70,9 @@ class UserController extends Controller
             return response()->json(['error' => 'Lowongan is not open for application'], 400);
         }
 
-        // Create class Kerja baru dengan ID manual
+        // Create class Kerja baru dengan ID baru
         $kerja = new Kerja();
-        $kerja->id = Uuid::uuid4()->toString(); // UUID baru untuk setiap entri
+        $kerja->id = Uuid::uuid4()->toString();
         $kerja->id_lowongan = $validatedData['id_lowongan'];
         $kerja->id_perusahaan = $lowongan->id_perusahaan;
         $kerja->id_user = $validatedData['id_user'];
@@ -87,18 +88,21 @@ class UserController extends Controller
 
     public function getAllPerusahaan()
     {
+        // Mengambil semua perusahaan
         $perusahaans = Perusahaan::all();
         return response()->json($perusahaans, 200);
     }
 
     public function getAllLowongan()
     {
+        // Mengambil semua lowongan
         $lowongans = Lowongan::all();
         return response()->json($lowongans, 200);
     }
 
     public function getLowonganInfo($id)
     {
+        // Mengambil data lowongan dengan id == $id
         $lowongan = Lowongan::find($id);
 
         // Validasi
@@ -120,6 +124,7 @@ class UserController extends Controller
 
     public function getAllKerja()
     {
+        // Mengambil semua class Kerja
         $kerjas = Kerja::all();
 
         return response()->json($kerjas, 200);
@@ -138,7 +143,7 @@ class UserController extends Controller
         // Proses penyimpanan gambar
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = $id . '.' . $image->extension(); // Menggunakan ID sebagai bagian dari nama file
+            $imageName = $id . '.' . $image->extension();
             $image->move(public_path('images'), $imageName);
 
             // Buat URL untuk gambar yang diunggah
@@ -153,7 +158,7 @@ class UserController extends Controller
         }
 
         // Berikan respons sukses atau sesuaikan dengan kebutuhan aplikasi jika tidak ada gambar yang diunggah
-        return response()->json(['message' => 'No image uploaded'],200);
+        return response()->json(['message' => 'Upload image gagal'],200);
     }
 
 }

@@ -7,7 +7,6 @@ use App\Models\Perusahaan;
 
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -118,27 +117,26 @@ class AuthController extends Controller
 
     public function loginPerusahaan(Request $request)
     {
-        // Validate the incoming request data
+        // Validasi
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Attempt to authenticate perusahaan
         if (Auth::guard('perusahaan')->attempt($credentials)) {
-            // If authentication successful, get the authenticated perusahaan
             $perusahaan = Auth::guard('perusahaan')->user();
             
-            // Response with perusahaan data
+            // Response berhasil
             return response()->json($perusahaan, 200);
         } else {
-            // If authentication fails, return error response
+            // Response gagal
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
     }
 
     public function getPerusahaan($id)
     {
+        // Mengambil data perusahaan dengan id == $id
         $perusahaan = Perusahaan::find($id);
         if (!$perusahaan) {
             return response()->json(['error' => 'Perusahaan tidak ditemukan'], 404);

@@ -15,6 +15,7 @@ class PerusahaanController extends Controller
 {
     public function getAllPerusahaan()
     {
+        // Mengambil semua perusahaan
         $perusahaans = Perusahaan::all();
         return response()->json($perusahaans, 200);
     }
@@ -90,6 +91,7 @@ class PerusahaanController extends Controller
 
     public function deleteLowongan($id)
     {
+        // Mengambil lowongan dengan id == $id
         $lowongan = Lowongan::find($id);
 
         // Validasi
@@ -122,6 +124,7 @@ class PerusahaanController extends Controller
 
     public function checkPendaftarLowongan($id)
     {
+        // Mengambil kerja dengan id_lowongan == $id
         $pendaftar = Kerja::where('id_lowongan', $id)
             ->where('status', 'applied')
             ->get();
@@ -209,5 +212,36 @@ class PerusahaanController extends Controller
         $users = User::whereIn('id', $id_users)->get();
 
         return response()->json($users, 200);
+    }
+
+    public function editPerusahaanPFP($id, Request $request)
+    {
+        // Pencarian perusahaan
+        $user = Perusahaan::find($id);
+
+        // Validasi bahwa request memiliki file gambar yang diunggah
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048' // Contoh validasi untuk file gambar
+        ]);
+
+        // Proses penyimpanan gambar
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = $id . '.' . $image->extension();
+            $image->move(public_path('images'), $imageName);
+
+            // Buat URL untuk gambar yang diunggah
+            $imageUrl = asset('images/' . $imageName);
+
+            // Penyimpanan ke database
+            $user->profile_picture = $imageUrl;
+            $user->save();
+
+            // Berikan respons dengan URL gambar yang diunggah
+            return response()->json(['image_url' => $imageUrl], 200);
+        }
+
+        // Berikan respons sukses atau sesuaikan dengan kebutuhan aplikasi jika tidak ada gambar yang diunggah
+        return response()->json(['message' => 'Upload image gagal'],200);
     }
 }

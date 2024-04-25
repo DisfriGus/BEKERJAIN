@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PerusahaanController;
+use App\Models\Perusahaan;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -32,6 +33,7 @@ Route::get('user/allkerja/get', [UserController::class, 'getAllKerja']);
 Route::post('user/editpfp/{id}', [UserController::class, 'editUserPFP']);
 
 // Perusahaan Functions
+Route::post('pt/editptpfp/{id}', [PerusahaanController::class, 'editPerusahaanPFP']);
 Route::get('pt/allperusahaan', [PerusahaanController::class, 'getAllPerusahaan']);
 Route::post('pt/newlowongan/{id}', [PerusahaanController::class, 'createLowongan']);
 Route::put('pt/lowonganperusahaan/edit/{id}', [PerusahaanController::class, 'editLowongan']);
