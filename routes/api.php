@@ -29,6 +29,7 @@ Route::get('user/perusahaan/all', [UserController::class, 'getAllPerusahaan']);
 Route::post('user/apply', [UserController::class, 'applyLowongan']);
 Route::get('user/lowongan/{id}', [UserController::class, 'getLowonganInfo']);
 Route::get('user/allkerja/get', [UserController::class, 'getAllKerja']);
+Route::post('user/editpfp/{id}', [UserController::class, 'editUserPFP']);
 
 // Perusahaan Functions
 Route::get('pt/allperusahaan', [PerusahaanController::class, 'getAllPerusahaan']);

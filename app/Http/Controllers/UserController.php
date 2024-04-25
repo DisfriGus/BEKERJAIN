@@ -9,7 +9,7 @@ use App\Models\Lowongan;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -107,11 +107,12 @@ class UserController extends Controller
         }
         return response()->json($lowongan, 200);
     }
+
     public function checkUserLowonganStatus($id)
     {
         // Mencari kerjaan selesai dengan id_user yang sesuai
         $items = Kerja::where('id_user', $id)
-                  ->get();
+            ->get();
 
         // Return the retrieved items as a JSON response
         return response()->json($items, 200);
@@ -123,4 +124,36 @@ class UserController extends Controller
 
         return response()->json($kerjas, 200);
     }
+
+    public function editUserPFP($id, Request $request)
+    {
+        // Pencarian user
+        $user = User::find($id);
+
+        // Validasi bahwa request memiliki file gambar yang diunggah
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048' // Contoh validasi untuk file gambar
+        ]);
+
+        // Proses penyimpanan gambar
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = $id . '.' . $image->extension(); // Menggunakan ID sebagai bagian dari nama file
+            $image->move(public_path('images'), $imageName);
+
+            // Buat URL untuk gambar yang diunggah
+            $imageUrl = asset('images/' . $imageName);
+
+            // Penyimpanan ke database
+            $user->profile_picture = $imageUrl;
+            $user->save();
+
+            // Berikan respons dengan URL gambar yang diunggah
+            return response()->json(['image_url' => $imageUrl], 200);
+        }
+
+        // Berikan respons sukses atau sesuaikan dengan kebutuhan aplikasi jika tidak ada gambar yang diunggah
+        return response()->json(['message' => 'No image uploaded'],200);
+    }
+
 }
