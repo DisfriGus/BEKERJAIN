@@ -7,8 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Perusahaan;
 use App\Models\Lowongan;
 use App\Models\Kerja;
-
+use App\Models\User;
 use Carbon\Carbon;
+use Ramsey\Uuid\Uuid;
 
 class PerusahaanController extends Controller
 {
@@ -24,20 +25,25 @@ class PerusahaanController extends Controller
         $validatedData = $request->validate([
             'nama_posisi' => 'required|string|max:255',
             'deskripsi_pekerjaan' => 'required|string',
+            'kualifikasi' => 'required|string',
             'lokasi' => 'required|string|max:255',
-            'open' => 'required|boolean',
             'slot_posisi' => 'required|integer',
-            'gaji_bulanan' => 'required|integer',
+            'gaji_dari' => 'required|integer',
+            'gaji_hingga' => 'required|integer',
         ]);
 
         // Membuat lowongan baru
+        $generateID = Uuid::uuid4()->toString();
         $lowongan = Lowongan::create([
+            'id' => $generateID,
             'nama_posisi' => $validatedData['nama_posisi'],
             'deskripsi_pekerjaan' => $validatedData['deskripsi_pekerjaan'],
             'lokasi' => $validatedData['lokasi'],
-            'open' => $validatedData['open'],
+            'kualifikasi' => $validatedData['kualifikasi'],
+            'open' => true,
             'slot_posisi' => $validatedData['slot_posisi'],
-            'gaji_bulanan' => $validatedData['gaji_bulanan'],
+            'gaji_dari' => $validatedData['gaji_dari'],
+            'gaji_hingga' => $validatedData['gaji_hingga'],
             'id_perusahaan' => $id,
         ]);
 
@@ -56,22 +62,27 @@ class PerusahaanController extends Controller
         $validatedData = $request->validate([
             'nama_posisi' => 'required|string|max:255',
             'deskripsi_pekerjaan' => 'required|string',
+            'kualifikasi' => 'required|string',
             'lokasi' => 'required|string|max:255',
             'open' => 'required|boolean',
             'slot_posisi' => 'required|integer',
-            'gaji_bulanan' => 'required|integer',
+            'gaji_dari' => 'required|integer',
+            'gaji_hingga' => 'required|integer',
         ]);
 
         // Update data lowongan
         $lowongan->nama_posisi = $validatedData['nama_posisi'];
         $lowongan->deskripsi_pekerjaan = $validatedData['deskripsi_pekerjaan'];
+        $lowongan->kualifikasi = $validatedData['kualifikasi'];
         $lowongan->lokasi = $validatedData['lokasi'];
         $lowongan->open = $validatedData['open'];
         $lowongan->slot_posisi = $validatedData['slot_posisi'];
-        $lowongan->gaji_bulanan = $validatedData['gaji_bulanan'];
-        
+        $lowongan->gaji_dari = $validatedData['gaji_dari'];
+        $lowongan->gaji_hingga = $validatedData['gaji_hingga'];
+
         // Update lowongan
         $lowongan->save();
+
 
         // Response berhasil
         return response()->json($lowongan, 200);
@@ -80,22 +91,22 @@ class PerusahaanController extends Controller
     public function deleteLowongan($id)
     {
         $lowongan = Lowongan::find($id);
-    
+
         // Validasi
         if (!$lowongan) {
             return response()->json(['error' => 'Lowongan not found'], 404);
         }
-    
+
         // Update status dan tgl_akhir kerja
         Kerja::where('id_lowongan', $id)
             ->update([
                 'status' => 'terhapus',
                 'tgl_akhir' => Carbon::now()
             ]);
-    
+
         // Delete lowongan
         $lowongan->delete();
-    
+
         // Response sukses
         return response()->json(['message' => 'Lowongan deleted successfully'], 200);
     }
@@ -111,32 +122,36 @@ class PerusahaanController extends Controller
 
     public function checkPendaftarLowongan($id)
     {
-        // Mendapatkan class kerja dengan id sesuai dan status == "applied"
         $pendaftar = Kerja::where('id_lowongan', $id)
-                            ->where('status', 'applied')
-                            ->get();
+            ->where('status', 'applied')
+            ->get();
 
-        // Response berhasil
-        return response()->json($pendaftar, 200);
+        // Ambil ID user dari pendaftar
+        $id_users = $pendaftar->pluck('id_user');
+
+        // Mengambil data lengkap user yang sesuai dengan ID
+        $users = User::whereIn('id', $id_users)->get();
+
+        return response()->json($users, 200);
     }
 
     public function terimaPendaftarLowongan($idLowongan, $idUser)
     {
         // Pencarian kerja
         $kerja = Kerja::where('id_lowongan', $idLowongan)
-                      ->where('id_user', $idUser)
-                      ->first();
-    
+            ->where('id_user', $idUser)
+            ->first();
+
         // Validasi
         if (!$kerja) {
             return response()->json(['error' => 'Lamaran tidak ditemukan'], 404);
         }
-    
+
         // Update status kerja
         $kerja->status = 'diterima';
         $kerja->tgl_mulai = Carbon::now();
         $kerja->save();
-    
+
         // Response berhasil
         return response()->json(['message' => 'Pelamar diterima'], 200);
     }
@@ -145,6 +160,25 @@ class PerusahaanController extends Controller
     {
         // Pencarian kerja
         $kerja = Kerja::where('id_lowongan', $idLowongan)
+            ->where('id_user', $idUser)
+            ->first();
+
+        // Validasi
+        if (!$kerja) {
+            return response()->json(['error' => 'Lamaran tidak ditemukan'], 404);
+        }
+
+        // Update status kerja
+        $kerja->status = 'ditolak';
+        $kerja->save();
+
+        // Response berhasil
+        return response()->json(['message' => 'Pelamar ditolak'], 200);
+    }
+    public function selesaikanPekerjaLowongan($idLowongan, $idUser)
+    {
+        // Pencarian kerja
+        $kerja = Kerja::where('id_lowongan', $idLowongan)
                       ->where('id_user', $idUser)
                       ->first();
     
@@ -154,10 +188,26 @@ class PerusahaanController extends Controller
         }
     
         // Update status kerja
-        $kerja->status = 'ditolak';
+        $kerja->status = 'selesai';
+        $kerja->tgl_akhir = Carbon::now();
         $kerja->save();
     
         // Response berhasil
-        return response()->json(['message' => 'Pelamar ditolak'], 200);
+        return response()->json(['message' => 'Pekerja berhenti'], 200);
+    }
+
+    public function checkPegawai($id)
+    {
+        $pendaftar = Kerja::where('id_lowongan', $id)
+            ->where('status', 'diterima')
+            ->get();
+
+        // Ambil ID user dari pendaftar
+        $id_users = $pendaftar->pluck('id_user');
+
+        // Mengambil data lengkap user yang sesuai dengan ID
+        $users = User::whereIn('id', $id_users)->get();
+
+        return response()->json($users, 200);
     }
 }

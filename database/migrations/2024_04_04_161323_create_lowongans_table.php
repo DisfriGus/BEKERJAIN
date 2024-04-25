@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('lowongans', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('nama_posisi');
-            $table->string('deskripsi_pekerjaan');
-            $table->string('kualifikasi');
+            $table->longText('deskripsi_pekerjaan');
+            $table->longText('kualifikasi');
             $table->string('lokasi');
             $table->boolean('open');
             $table->integer('slot_posisi');

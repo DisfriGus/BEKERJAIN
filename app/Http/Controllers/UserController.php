@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Perusahaan;
 use App\Models\Kerja;
 use App\Models\Lowongan;
-
+use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,17 +41,23 @@ class UserController extends Controller
     {
         // Mencari kerjaan selesai dengan id_user yang sesuai
         $items = Kerja::where('id_user', $id)
-                  ->where('status', 'finished')
-                  ->get();
+            ->where('status', 'finished')
+            ->get();
 
         // Return the retrieved items as a JSON response
         return response()->json($items, 200);
     }
 
-    public function applyLowongan($lowonganId, $userId)
+    public function applyLowongan(Request $request)
     {
+        // Validasi data
+        $validatedData = $request->validate([
+            'id_lowongan' => 'required',
+            'id_user' => 'required',
+        ]);
+
         // Pengambilan data dengan id yang sesuai
-        $lowongan = Lowongan::find($lowonganId);
+        $lowongan = Lowongan::find($validatedData['id_lowongan']);
 
         // Validasi apakah lowongan valid
         if (!$lowongan) {
@@ -63,13 +69,14 @@ class UserController extends Controller
             return response()->json(['error' => 'Lowongan is not open for application'], 400);
         }
 
-        // Create class Kerja baru
+        // Create class Kerja baru dengan ID manual
         $kerja = new Kerja();
-        $kerja->id_lowongan = $lowonganId;
+        $kerja->id = Uuid::uuid4()->toString(); // UUID baru untuk setiap entri
+        $kerja->id_lowongan = $validatedData['id_lowongan'];
         $kerja->id_perusahaan = $lowongan->id_perusahaan;
-        $kerja->id_user = $userId;
-        $kerja->tgl_mulai = null; 
-        $kerja->tgl_akhir = null; 
+        $kerja->id_user = $validatedData['id_user'];
+        $kerja->tgl_mulai = null;
+        $kerja->tgl_akhir = null;
         $kerja->nama_posisi = $lowongan->nama_posisi;
         $kerja->status = 'applied';
         $kerja->save();
@@ -99,5 +106,21 @@ class UserController extends Controller
             return response()->json(['error' => 'Lowongan tidak ditemukan'], 404);
         }
         return response()->json($lowongan, 200);
+    }
+    public function checkUserLowonganStatus($id)
+    {
+        // Mencari kerjaan selesai dengan id_user yang sesuai
+        $items = Kerja::where('id_user', $id)
+                  ->get();
+
+        // Return the retrieved items as a JSON response
+        return response()->json($items, 200);
+    }
+
+    public function getAllKerja()
+    {
+        $kerjas = Kerja::all();
+
+        return response()->json($kerjas, 200);
     }
 }
