@@ -70,6 +70,17 @@ class UserController extends Controller
             return response()->json(['error' => 'Lowongan is not open for application'], 400);
         }
 
+        // Penegecekan apakah user sudah mendaftar pada lowongan
+        $kerjacek = Kerja::where('id_lowongan', $validatedData['id_lowongan'])
+                    ->where('id_user', $validatedData['id_user'])
+                    ->whereIn('status', ['applied', 'ditolak', 'diterima'])
+                    ->exists();
+
+        // Check if any matching records are found
+        if ($kerjacek) {
+            return response()->json(['message' => 'Tidak bisa mendaftar karena sudah mendaftar / kerja'], 200);
+        }
+
         // Create class Kerja baru dengan ID baru
         $kerja = new Kerja();
         $kerja->id = Uuid::uuid4()->toString();
@@ -83,7 +94,7 @@ class UserController extends Controller
         $kerja->save();
 
         // Response berhasil
-        return response()->json($kerja, 201);
+        return response()->json($kerja,201);
     }
 
     public function getAllPerusahaan()
