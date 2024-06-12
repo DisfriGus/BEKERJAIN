@@ -44,7 +44,7 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'kerjaindb'),
+            'database' => env('DB_DATABASE', 'kerjain'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', 'Sireagr03.'),
             'unix_socket' => env('DB_SOCKET', ''),
