@@ -19,7 +19,7 @@ class AuthController extends Controller
         $data['id'] = $generateID;
         $data['nama'] = $request->nama;
         $data['email'] = $request->email;
-        $data['deskripsi'] = "-";
+        $data['deskripsi'] = null;
         $data['password'] = bcrypt($request->password);
         $data['tanggal_lahir'] = $request->tanggal_lahir;
         

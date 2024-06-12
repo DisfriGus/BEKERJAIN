@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('password');
-            $table->longText('deskripsi')->default("-");
+            $table->longText('deskripsi');
             $table->date('tanggal_lahir');
             $table->string('name')->nullable();
             $table->rememberToken()->nullable();
