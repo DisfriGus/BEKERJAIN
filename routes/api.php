@@ -31,7 +31,6 @@ Route::post('user/apply', [UserController::class, 'applyLowongan']);
 Route::get('user/lowongan/{id}', [UserController::class, 'getLowonganInfo']);
 Route::get('user/allkerja/get', [UserController::class, 'getAllKerja']);
 Route::post('user/editpfp/{id}', [UserController::class, 'editUserPFP']);
-Route::put('user/editpfp/{id}', [UserController::class, 'updateUserPFP']);
 
 // Perusahaan Functions
 Route::post('pt/editptpfp/{id}', [PerusahaanController::class, 'editPerusahaanPFP']);
